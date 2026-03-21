@@ -42,14 +42,47 @@ t_noeud* creer_noeud(t_type_noeud type) {
 // --- Implémentation de la grammaire ---
 
 t_noeud* analyser_document() {
+    consommer_balise(TOKEN_BALISE_OUVRANTE, "document");
+    t_noeud* mon_noeud_doc = creer_noeud(TYPE_DOCUMENT);
+    mon_noeud_doc->mon_premier_fils = analyser_contenu();
+    consommer_balise(TOKEN_BALISE_FERMANTE, "document");
+    return mon_noeud_doc;
 }
 
 t_noeud* analyser_contenu() {
-    // Ici, tu dois faire une boucle qui teste le TOKEN_COURANT
-    // Si c'est <section>, appeler analyser_section()
-    // Si c'est <titre>, appeler analyser_titre() 
-    // ... et attacher les résultats via 'mon_frere_suivant'
-    return NULL; 
+    t_noeud* premier_fils = NULL;
+    t_noeud* dernier_ajoute = NULL;
+    while (mon_token_courant.mon_type != TOKEN_BALISE_FERMANTE && mon_token_courant.mon_type != TOKEN_FIN_FICHIER) {
+        t_noeud* nouveau_noeud = NULL;
+        if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE) {
+            if (strcmp(mon_token_courant.ma_valeur, "section") == 0) {
+                nouveau_noeud = analyser_section();
+            } 
+            else if (strcmp(mon_token_courant.ma_valeur, "titre") == 0) {
+                nouveau_noeud = analyser_titre();
+            } 
+            else if (strcmp(mon_token_courant.ma_valeur, "liste") == 0) {
+                nouveau_noeud = analyser_liste();
+            }
+            else {
+                nouveau_noeud = analyser_mot_enrichi();
+            }
+        } 
+        else {
+            nouveau_noeud = analyser_mot_enrichi();
+        }
+        // Chaînage des frères pour l'arbre n-aire
+        if (nouveau_noeud != NULL) {
+            if (premier_fils == NULL) {
+                premier_fils = nouveau_noeud;
+            } else {
+                dernier_ajoute->mon_frere_suivant = nouveau_noeud;
+            }
+            dernier_ajoute = nouveau_noeud;
+        }
+    }
+    return premier_fils;
 }
+
 
 // À toi de compléter les autres fonctions (analyser_section, analyser_liste, etc.)

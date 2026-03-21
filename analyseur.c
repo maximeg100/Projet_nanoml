@@ -41,6 +41,12 @@ t_noeud* creer_noeud(t_type_noeud type) {
 
 // --- Implémentation de la grammaire ---
 
+t_noeud* analyser_texte_enrichi(){
+    analyser_document();
+    analyser_annexes();
+}
+
+
 t_noeud* analyser_document() {
     consommer_balise(TOKEN_BALISE_OUVRANTE, "document");
     t_noeud* mon_noeud_doc = creer_noeud(TYPE_DOCUMENT);

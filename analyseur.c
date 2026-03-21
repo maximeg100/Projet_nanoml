@@ -8,13 +8,35 @@ t_token mon_token_courant;
 
 // Utilitaire pour avancer dans le lexer
 void avancer() {
+    mon_token_courant = mon_token_suivant();
 }
 
 // Fonction pour vérifier et consommer une balise précise
-void consommer_balise(t_type_token type, const char* nom) {
+void consommer_balise(t_type_token type_attendu, const char* nom_attendu) {
+    // 1. On vérifie si le type (ex: OUVRANTE) et le nom (ex: "section") correspondent
+    if (mon_token_courant.mon_type == type_attendu && strcmp(mon_token_courant.ma_valeur, nom_attendu) == 0) {
+        // Si c'est bon, on passe au mot suivant dans le fichier
+        avancer();
+    } else {
+        // Sinon, on affiche une erreur et on arrête tout (Erreur Syntaxique)
+        fprintf(stderr, "Erreur : attendu '%s', trouvé '%s'\n", nom_attendu, mon_token_courant.ma_valeur);
+        exit(EXIT_FAILURE);
+    }
 }
 
 t_noeud* creer_noeud(t_type_noeud type) {
+    t_noeud* nouveau = malloc(sizeof(t_noeud));
+    if (nouveau == NULL){
+        fprintf(stderr, "erreur d'allocation memoire");
+        exit(EXIT_FAILURE);
+    }
+    nouveau->mon_type = type;
+    nouveau->mon_contenu = NULL;
+    nouveau->mon_premier_fils = NULL;
+    nouveau->mon_frere_suivant = NULL;
+
+    return nouveau;
+
 }
 
 // --- Implémentation de la grammaire ---

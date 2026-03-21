@@ -41,9 +41,10 @@ t_noeud* creer_noeud(t_type_noeud type) {
 
 // --- Implémentation de la grammaire ---
 
-t_noeud* analyser_texte_enrichi(){
-    analyser_document();
-    analyser_annexes();
+t_noeud* analyser_texte_enrichi() {
+    t_noeud* doc = analyser_document();
+    doc->mon_frere_suivant = analyser_annexes();
+    return doc;
 }
 
 
@@ -88,6 +89,22 @@ t_noeud* analyser_contenu() {
         }
     }
     return premier_fils;
+}
+
+t_noeud* analyser_section(){
+    consommer_balise(TOKEN_BALISE_OUVRANTE, "section");
+    t_noeud* mon_noeud_doc = creer_noeud(TYPE_SECTION);
+    mon_noeud_doc->mon_premier_fils = analyser_contenu();
+    consommer_balise(TOKEN_BALISE_FERMANTE, "section");
+    return mon_noeud_doc;
+}
+
+t_noeud* analyser_titre(){
+    consommer_balise(TOKEN_BALISE_OUVRANTE, "titre");
+    t_noeud* mon_noeud_doc = creer_noeud(TYPE_TITRE);
+    mon_noeud_doc->mon_premier_fils = analyser_texte();
+    consommer_balise(TOKEN_BALISE_FERMANTE, "titre");
+    return mon_noeud_doc;
 }
 
 

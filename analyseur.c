@@ -56,6 +56,25 @@ t_noeud* analyser_document() {
     return mon_noeud_doc;
 }
 
+
+t_noeud* analyser_annexe() {
+    t_noeud* premier_fils = NULL;
+    t_noeud* dernier_ajoute = NULL;
+    while (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE && strcmp(mon_token_courant.ma_valeur, "annexe") == 0) {
+        consommer_balise(TOKEN_BALISE_OUVRANTE, "annexe");
+        t_noeud* mon_noeud_anx = creer_noeud(TYPE_ANNEXE);
+        mon_noeud_anx->mon_premier_fils = analyser_contenu();
+        consommer_balise(TOKEN_BALISE_FERMANTE, "annexe");
+        if (premier_fils == NULL) {
+            premier_fils = mon_noeud_anx;
+        } else {
+            dernier_ajoute->mon_frere_suivant = mon_noeud_anx;
+        }
+        dernier_ajoute = mon_noeud_anx;
+    }
+    return premier_fils;
+}
+
 t_noeud* analyser_contenu() {
     t_noeud* premier_fils = NULL;
     t_noeud* dernier_ajoute = NULL;
@@ -93,19 +112,24 @@ t_noeud* analyser_contenu() {
 
 t_noeud* analyser_section(){
     consommer_balise(TOKEN_BALISE_OUVRANTE, "section");
-    t_noeud* mon_noeud_doc = creer_noeud(TYPE_SECTION);
-    mon_noeud_doc->mon_premier_fils = analyser_contenu();
+    t_noeud* mon_noeud_sec = creer_noeud(TYPE_SECTION);
+    mon_noeud_sec->mon_premier_fils = analyser_contenu();
     consommer_balise(TOKEN_BALISE_FERMANTE, "section");
-    return mon_noeud_doc;
+    return mon_noeud_sec;
 }
 
 t_noeud* analyser_titre(){
     consommer_balise(TOKEN_BALISE_OUVRANTE, "titre");
-    t_noeud* mon_noeud_doc = creer_noeud(TYPE_TITRE);
-    mon_noeud_doc->mon_premier_fils = analyser_texte();
+    t_noeud* mon_noeud_tit = creer_noeud(TYPE_TITRE);
+    mon_noeud_tit->mon_premier_fils = analyser_texte();
     consommer_balise(TOKEN_BALISE_FERMANTE, "titre");
-    return mon_noeud_doc;
+    return mon_noeud_tit;
 }
 
 
-// À toi de compléter les autres fonctions (analyser_section, analyser_liste, etc.)
+
+
+
+
+
+//autres fonctions (analyser_section, analyser_liste, etc.)

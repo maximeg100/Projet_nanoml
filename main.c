@@ -33,3 +33,10 @@ int main(int argc, char* argv[]) {
 
     return EXIT_SUCCESS;
 }
+
+
+//a ameliorer
+//soucis de nombre de | dans l'affichage a cote de MON PREMIER TEST
+//soucis de nombre de | dans document>section
+//la phrase ne passe pas a la ligne (soucis dans afficher_mot surement
+//enlever les espaces entre (troisieme ligne de doc et debut section / fin de section et fin de doc)

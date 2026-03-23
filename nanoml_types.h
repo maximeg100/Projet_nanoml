@@ -3,6 +3,7 @@
 
 // Les différents types d'éléments définis par la grammaire
 typedef enum {
+    TYPE_DOCUMENT_GLOBAL,
     TYPE_DOCUMENT,      // <document>
     TYPE_ANNEXE,        // <annexe>
     TYPE_SECTION,       // <section>

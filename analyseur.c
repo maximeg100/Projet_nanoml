@@ -11,14 +11,10 @@ void avancer() {
     mon_token_courant = mon_token_suivant();
 }
 
-// Fonction pour vérifier et consommer une balise précise
 void consommer_balise(t_type_token type_attendu, const char* nom_attendu) {
-    // 1. On vérifie si le type (ex: OUVRANTE) et le nom (ex: "section") correspondent
     if (mon_token_courant.mon_type == type_attendu && strcmp(mon_token_courant.ma_valeur, nom_attendu) == 0) {
-        // Si c'est bon, on passe au mot suivant dans le fichier
         avancer();
     } else {
-        // Sinon, on affiche une erreur et on arrête tout (Erreur Syntaxique)
         fprintf(stderr, "Erreur : attendu '%s', trouvé '%s'\n", nom_attendu, mon_token_courant.ma_valeur);
         exit(EXIT_FAILURE);
     }
@@ -42,13 +38,14 @@ t_noeud* creer_noeud(t_type_noeud type) {
 // --- Implémentation de la grammaire ---
 
 t_noeud* analyser_texte_enrichi() {
-    t_noeud* doc = analyser_document();
-    doc->mon_frere_suivant = analyser_annexes();
+    t_noeud* racine = creer_noeud(TYPE_DOCUMENT_GLOBAL);
+    racine->mon_premier_fils = analyser_document();
+    racine->mon_premier_fils->mon_frere_suivant = analyser_annexes();
     if (mon_token_courant.mon_type != TOKEN_FIN_FICHIER) {
         fprintf(stderr, "Erreur Syntaxique : Texte en trop après la fin du document (trouvé '%s')\n", mon_token_courant.ma_valeur);
         exit(EXIT_FAILURE);
     }
-    return doc;
+    return racine;
 }
 
 
@@ -272,5 +269,3 @@ t_noeud* analyser_mot_important() {
     consommer_balise(TOKEN_BALISE_FERMANTE, "important");
     return n;
 }
-
-//autres fonctions 

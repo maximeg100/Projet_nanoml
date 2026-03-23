@@ -44,6 +44,10 @@ t_noeud* creer_noeud(t_type_noeud type) {
 t_noeud* analyser_texte_enrichi() {
     t_noeud* doc = analyser_document();
     doc->mon_frere_suivant = analyser_annexes();
+    if (mon_token_courant.mon_type != TOKEN_FIN_FICHIER) {
+        fprintf(stderr, "Erreur Syntaxique : Texte en trop après la fin du document (trouvé '%s')\n", mon_token_courant.ma_valeur);
+        exit(EXIT_FAILURE);
+    }
     return doc;
 }
 

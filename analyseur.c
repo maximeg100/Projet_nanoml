@@ -57,7 +57,7 @@ t_noeud* analyser_document() {
 }
 
 
-t_noeud* analyser_annexe() {
+t_noeud* analyser_annexes() {
     t_noeud* premier_fils = NULL;
     t_noeud* dernier_ajoute = NULL;
     while (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE && strcmp(mon_token_courant.ma_valeur, "annexe") == 0) {
@@ -168,30 +168,44 @@ int est_du_texte() {
 t_noeud* analyser_item() {
     consommer_balise(TOKEN_BALISE_OUVRANTE, "item");
     t_noeud* mon_noeud_item = creer_noeud(TYPE_ITEM);
-    t_noeud* premier_bloc = NULL;
-    t_noeud* deuxieme_bloc = NULL;
-    // On regarde le premier jeton pour choisir la règle (9 ou 10)
+    t_noeud* contenu_item = NULL;
+    // On regarde le premier jeton pour choisir entre Règle 9 ou 10
     if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE && strcmp(mon_token_courant.ma_valeur, "liste") == 0) {
-        // CAS : <liste_texte>
-        premier_bloc = analyser_liste();
-        if (est_du_texte()) {
-            deuxieme_bloc = analyser_texte();
-        }
+        // Règle 9
+        contenu_item = analyser_liste_texte();
     } 
-    else if (est_du_texte()) {
-        // CAS : <texte_liste>
-        premier_bloc = analyser_texte();
-        if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE && strcmp(mon_token_courant.ma_valeur, "liste") == 0) {
-            deuxieme_bloc = analyser_liste();
-        }
+    else {
+        // Règle 10 (par défaut si c'est du texte)
+        contenu_item = analyser_texte_liste();
     }
-    // On branche les morceaux sous l'item
-    mon_noeud_item->mon_premier_fils = premier_bloc;
-    if (premier_bloc != NULL) {
-        premier_bloc->mon_frere_suivant = deuxieme_bloc;
-    }
+    // On branche le résultat sous l'item
+    mon_noeud_item->mon_premier_fils = contenu_item;
     consommer_balise(TOKEN_BALISE_FERMANTE, "item");
     return mon_noeud_item;
+}
+
+t_noeud* analyser_liste_texte() {
+    // 1. On analyse la liste obligatoirement
+    t_noeud* n_liste = analyser_liste();
+    // 2. On regarde s'il y a du texte à la suite (facultatif dans la répétition)
+    if (est_du_texte()) {
+        t_noeud* n_texte = analyser_texte();
+        // On chaîne le texte comme FRÈRE de la liste
+        n_liste->mon_frere_suivant = n_texte;
+    }
+    return n_liste;
+}
+
+t_noeud* analyser_texte_liste() {
+    // 1. On analyse le texte d'abord
+    t_noeud* n_texte = analyser_texte();
+    // 2. On regarde si une liste suit le texte
+    if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE && strcmp(mon_token_courant.ma_valeur, "liste") == 0) {
+        t_noeud* n_liste = analyser_liste();
+        // On chaîne la liste comme FRÈRE du texte
+        n_texte->mon_frere_suivant = n_liste;
+    }
+    return n_texte;
 }
 
 t_noeud* analyser_texte() {
@@ -209,6 +223,50 @@ t_noeud* analyser_texte() {
     return premier_mot;
 }
 
+char* copier_chaine(const char* source) {
+    int longueur = 0;
+    while (source[longueur] != '\0') {
+        longueur++;
+    }
+    char* destination = malloc((longueur + 1) * sizeof(char));
+    if (destination == NULL) {
+        fprintf(stderr, "Erreur : échec allocation mémoire chaîne\n");
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i <= longueur; i++) {
+        destination[i] = source[i];
+    }
 
+    return destination;
+}
+
+t_noeud* analyser_mot_enrichi() {
+    t_noeud* n = NULL;
+    // <mot_important>
+        if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE && strcmp(mon_token_courant.ma_valeur, "important") == 0) {
+        n = analyser_mot_important();
+    } 
+    // '<br/>'
+    else if (mon_token_courant.mon_type == TOKEN_BALISE_AUTO_FERMANTE && strcmp(mon_token_courant.ma_valeur, "br") == 0) {
+        n = creer_noeud(TYPE_BR);
+        n->mon_contenu = copier_chaine("br"); 
+        avancer(); 
+    } 
+    // <mot_simple>
+    else if (mon_token_courant.mon_type == TOKEN_TEXTE) {
+        n = creer_noeud(TYPE_TEXTE_BRUT);
+        n->mon_contenu = copier_chaine(mon_token_courant.ma_valeur);
+        avancer();
+    }
+    return n;
+}
+
+t_noeud* analyser_mot_important() {
+    consommer_balise(TOKEN_BALISE_OUVRANTE, "important");
+    t_noeud* n = creer_noeud(TYPE_IMPORTANT);
+    n->mon_premier_fils = analyser_texte();
+    consommer_balise(TOKEN_BALISE_FERMANTE, "important");
+    return n;
+}
 
 //autres fonctions 

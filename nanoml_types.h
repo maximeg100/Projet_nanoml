@@ -9,8 +9,9 @@ typedef enum {
     TYPE_TITRE,         // <titre>
     TYPE_LISTE,         // <liste>
     TYPE_ITEM,          // <item>
-    TYPE_MOT_ENRICHI,   // Texte, mot important ou br/
-    TYPE_TEXTE_BRUT     // Contenu textuel pur
+    TYPE_IMPORTANT,     // <important> 
+    TYPE_BR,            // <br/> 
+    TYPE_TEXTE_BRUT     // Contenu textuel pur 
 } t_type_noeud;
 
 // La structure de l'arbre n-aire

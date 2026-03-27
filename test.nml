@@ -3,9 +3,19 @@
   <section>
     Ceci est une phrase de test pour voir si les pipes de ma section s'affichent correctement sur cinquante colonnes.
   </section>
+  <section>
+    <liste>
+      <item>fraise</item>
+      <item>framboise</item>
+      <item>myrtilles</item>
+    </liste>
+  </section>
 </document>
 <annexe>
-  <titre>Annexe</titre>
+  <titre><important>Annexe</important></titre>
+  <section>
+    Ceci est une phrase de test pour voir si les pipes de ma section s'affichent correctement sur cinquante colonnes.
+  </section>
   <section>
     Ceci est une phrase de test pour voir si les pipes de ma section s'affichent correctement sur cinquante colonnes.
   </section>

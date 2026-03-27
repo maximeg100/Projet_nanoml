@@ -136,7 +136,7 @@ void parcourir_et_afficher(t_noeud* n, char* prefixe) {
             break;
         case TYPE_ITEM:
             terminer_ligne(prefixe);
-            afficher_mot("#", prefixe); 
+            afficher_mot("  #", prefixe); 
             parcourir_et_afficher(n->mon_premier_fils, prefixe);
             terminer_ligne(prefixe);
             break;

@@ -44,49 +44,6 @@ void transformer_en_majuscules(char* texte) {
     }
 }
 
-void afficher_mot(const char* mot, const char* prefixe) {
-    int longueur = strlen(mot);
-    int nb_pipes = strlen(prefixe); 
-    
-    // La colonne où commencent les pipes de fermeture (ex: 48 si 2 pipes)
-    int borne_droite = 50 - nb_pipes;
-
-    // 1. Si on est en début de ligne, on affiche le préfixe
-    if (colonne_actuelle == 0) {
-        printf("%s", prefixe);
-        colonne_actuelle = nb_pipes;
-    }
-
-    // 2. CONDITION DE SAUT DE LIGNE :
-    // Si le mot + un espace dépasse la borne_droite, on ferme et on saute
-    if (colonne_actuelle + longueur >= borne_droite) {
-        
-        // On remplit d'espaces jusqu'à la borne_droite
-        while (colonne_actuelle < borne_droite) {
-            printf(" ");
-            colonne_actuelle++;
-        }
-        
-        // On affiche les pipes de fermeture (ex: ||)
-        for (int i = 0; i < nb_pipes; i++) printf("|");
-        
-        // Retour à la ligne et ré-affichage du préfixe
-        printf("\n%s", prefixe);
-        colonne_actuelle = nb_pipes;
-    }
-
-    // 3. On affiche le mot
-    printf("%s", mot);
-    colonne_actuelle += longueur;
-
-    // 4. On ajoute un espace si le PROCHAIN mot a une chance de tenir
-    // (On ne met pas d'espace si on est déjà au bord)
-    if (colonne_actuelle < borne_droite - 1) {
-        printf(" ");
-        colonne_actuelle++;
-    }
-}
-
 void terminer_ligne(const char* prefixe) {
     // ligne deja vide
     if (colonne_actuelle == 0){
@@ -102,6 +59,50 @@ void terminer_ligne(const char* prefixe) {
     printf("\n");
     colonne_actuelle = 0;
 }
+
+// Vérifie si l'octet commence par les bits "10"
+int est_octet_suite(unsigned char c) {
+    // 0xC0 correspond à 11000000 en binaire (le masque)
+    // 0x80 correspond à 10000000 en binaire (le motif attendu)
+    return (c & 0xC0) == 0x80;
+}
+
+void afficher_mot(const char* mot, const char* prefixe) {
+    int nb_pipes = strlen(prefixe); 
+    int borne_droite = 50 - nb_pipes;
+
+    // 1. Initialisation du début de ligne
+    if (colonne_actuelle == 0) {
+        printf("%s", prefixe);
+        colonne_actuelle = nb_pipes;
+    }
+
+    // 2. Affichage et découpe
+    for (int i = 0; mot[i] != '\0'; i++) {
+        // Si on atteint la bordure de droite, on change de ligne
+        if (colonne_actuelle >= borne_droite) {
+            terminer_ligne(prefixe);
+            printf("%s", prefixe);
+            colonne_actuelle = nb_pipes;
+        }
+
+        printf("%c", mot[i]);
+
+        // On n'incrémente la colonne que pour les caractères "visuels"
+        if (!est_octet_suite((unsigned char)mot[i])) {
+            colonne_actuelle++;
+        }
+    }
+
+    // 3. Espace après le mot
+    if (colonne_actuelle < borne_droite) {
+        printf(" ");
+        colonne_actuelle++;
+    } else {
+        terminer_ligne(prefixe);
+    }
+}
+
 
 void parcourir_et_afficher(t_noeud* n, char* prefixe) {
     if (n == NULL){

@@ -12,10 +12,33 @@ void avancer() {
 }
 
 void consommer_balise(t_type_token type_attendu, const char* nom_attendu) {
-    if (mon_token_courant.mon_type == type_attendu && strcmp(mon_token_courant.ma_valeur, nom_attendu) == 0) {
+    if (mon_token_courant.mon_type == type_attendu && 
+        strcmp(mon_token_courant.ma_valeur, nom_attendu) == 0) {
         avancer();
     } else {
-        fprintf(stderr, "Erreur : attendu '%s', trouvé '%s'\n", nom_attendu, mon_token_courant.ma_valeur);
+        char format_recu[300];
+        char format_attendu[300];
+
+        // Formatage de la balise attendue
+        if (type_attendu == TOKEN_BALISE_FERMANTE) {
+            sprintf(format_attendu, "</%s>", nom_attendu);
+        } else {
+            sprintf(format_attendu, "<%s>", nom_attendu);
+        }
+
+        // Formatage de la balise réellement reçue
+        if (mon_token_courant.mon_type == TOKEN_BALISE_FERMANTE) {
+            sprintf(format_recu, "</%s>", mon_token_courant.ma_valeur);
+        } else if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE) {
+            sprintf(format_recu, "<%s>", mon_token_courant.ma_valeur);
+        } else if (mon_token_courant.mon_type == TOKEN_TEXTE) {
+            sprintf(format_recu, "TEXTE('%s')", mon_token_courant.ma_valeur);
+        } else {
+            sprintf(format_recu, "FIN DE FICHIER");
+        }
+
+        fprintf(stderr, "Erreur syntaxique : attendu '%s', reçu '%s'\n", 
+                format_attendu, format_recu);
         exit(EXIT_FAILURE);
     }
 }

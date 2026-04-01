@@ -1,22 +1,23 @@
 <document>
   <titre>Mon Premier Test</titre>
   <section>
-    Ceci est une declaration d'amour pour voir si les pipes de ma section s'affichent correctement sur cinquante colonnes.
+    diisobutylphénoxyéthoxyéthyldiméthylbenzylammonium
   </section>
   <section>
     <liste>
-      <item>Calin</item>
-      <item>Bisou</item>
-      <item>Galoche</item>
+      <item>Fraise</item>
+      <item>Framboise</item>
+      <item>Myrtille</item>
     </liste>
   </section>
 </document>
+
 <annexe>
   <titre><important>Annexe</important></titre>
   <section>
-    Ceci est une declaration d'amour pour voir si les pipes de ma section s'affichent correctement sur cinquante colonnes.
+    Ceci est un petit texte pour voir si les pipes de ma section s'affichent correctement sur cinquante colonnes.
   </section>
   <section>
-    Ceci est une declaration d'amour pour voir si les pipes de ma section s'affichent correctement sur cinquante colonnes.
+    Ceci est un petit texte pour voir si les pipes de ma section s'affichent correctement sur cinquante colonnes.
   </section>
 </annexe>

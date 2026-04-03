@@ -21,17 +21,21 @@ int main(int argc, char* argv[]) {
     avancer(); 
 
     // 4. Lancer l'analyse syntaxique (crée l'arbre)
-    printf("--- Analyse en cours ---\n");
+    printf("debut d'analyse\n");
     t_noeud* racine = analyser_texte_enrichi();
-    printf("--- Analyse terminee avec succes ---\n\n");
+    printf("analyse finie avec succes\n\n");
 
-    // 5. Lancer le rendu graphique
-    printf("--- Rendu Final (50 colonnes) ---\n");
-    // On commence avec un préfixe vide ""
-    parcourir_et_afficher(racine, ""); 
-    printf("\n--- Fin du programme ---\n");
+    if (racine != NULL) {
+        printf("=== DEBUG : STRUCTURE DE L'ARBRE ===\n");
+        afficher_arbre_debug(racine, 0);
+        printf("====================================\n\n");
 
-    return EXIT_SUCCESS;
+        printf("=== RENDU FINAL ===\n");
+        char prefixe[100] = ""; 
+        parcourir_et_afficher(racine, prefixe);
+    }
+
+    return 0;
 }
 
 

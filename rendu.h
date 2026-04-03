@@ -11,5 +11,6 @@ void terminer_ligne(const char* prefixe);
 void afficher_mot(const char* mot, const char* prefixe);
 void transformer_en_majuscules(char* texte);
 void parcourir_et_afficher(t_noeud* n, char* prefixe);
+void afficher_arbre_debug(t_noeud* n, int niveau);
 
 #endif

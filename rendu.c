@@ -155,3 +155,36 @@ void parcourir_et_afficher(t_noeud* n, char* prefixe) {
     }
     parcourir_et_afficher(n->mon_frere_suivant, prefixe);
 }
+
+const char* nom_du_type(t_type_noeud type) {
+    switch (type) {
+        case TYPE_DOCUMENT_GLOBAL: return "GLOBAL";
+        case TYPE_DOCUMENT:        return "DOC";
+        case TYPE_ANNEXE:          return "ANNEXE";
+        case TYPE_SECTION:         return "SECTION";
+        case TYPE_TITRE:           return "TITRE";
+        case TYPE_LISTE:           return "LISTE";
+        case TYPE_ITEM:            return "ITEM";
+        case TYPE_IMPORTANT:       return "IMPORTANT";
+        case TYPE_BR:              return "BR";
+        case TYPE_TEXTE_BRUT:      return "TEXTE";
+        default:                   return "INCONNU";
+    }
+}
+
+void afficher_arbre_debug(t_noeud* n, int niveau) {
+    if (n == NULL) return;
+    for (int i = 0; i < niveau; i++) printf("  ");
+    printf("[%s]", nom_du_type(n->mon_type));
+    if (n->mon_contenu != NULL) {
+        printf(" : \"%s\"", n->mon_contenu);
+    }
+    printf("\n");
+    if (n->mon_premier_fils != NULL) {
+        afficher_arbre_debug(n->mon_premier_fils, niveau + 1);
+    }
+    if (n->mon_frere_suivant != NULL) {
+        afficher_arbre_debug(n->mon_frere_suivant, niveau);
+    }
+}
+

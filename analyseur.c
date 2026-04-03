@@ -102,24 +102,27 @@ t_noeud* analyser_annexes() {
 t_noeud* analyser_contenu() {
     t_noeud* premier_fils = NULL;
     t_noeud* dernier_ajoute = NULL;
-    while (mon_token_courant.mon_type != TOKEN_BALISE_FERMANTE && mon_token_courant.mon_type != TOKEN_FIN_FICHIER) {
+
+    while (mon_token_courant.mon_type != TOKEN_BALISE_FERMANTE && 
+           mon_token_courant.mon_type != TOKEN_FIN_FICHIER) {
+        
         t_noeud* nouveau_noeud = NULL;
+
         if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE) {
-            if (strcmp(mon_token_courant.ma_valeur, "section") == 0) {
+            if (strcmp(mon_token_courant.ma_valeur, "section") == 0) 
                 nouveau_noeud = analyser_section();
-            } 
-            else if (strcmp(mon_token_courant.ma_valeur, "titre") == 0) {
+            else if (strcmp(mon_token_courant.ma_valeur, "titre") == 0) 
                 nouveau_noeud = analyser_titre();
-            } 
-            else if (strcmp(mon_token_courant.ma_valeur, "liste") == 0) {
+            else if (strcmp(mon_token_courant.ma_valeur, "liste") == 0) 
                 nouveau_noeud = analyser_liste();
-            }
-            else {
-                nouveau_noeud = analyser_mot_enrichi();
-            }
+            else if (strcmp(mon_token_courant.ma_valeur, "important") == 0)
+                nouveau_noeud = analyser_texte();
+            else 
+                nouveau_noeud = analyser_texte();
         } 
-        else {
-            nouveau_noeud = analyser_mot_enrichi();
+        else if (mon_token_courant.mon_type == TOKEN_TEXTE || 
+                 mon_token_courant.mon_type == TOKEN_BALISE_AUTO_FERMANTE) {
+            nouveau_noeud = analyser_texte();
         }
         // Chaînage des frères pour l'arbre n-aire
         if (nouveau_noeud != NULL) {
@@ -209,29 +212,25 @@ t_noeud* analyser_item() {
 }
 
 t_noeud* analyser_liste_texte() {
-    // 1. On analyse la liste obligatoirement
+    //analyse liste
     t_noeud* n_liste = analyser_liste();
-    // 2. On regarde s'il y a du texte à la suite (facultatif dans la répétition)
+    //si il y a du texte ensuite on l'attache 
     if (est_du_texte()) {
-        t_noeud* n_texte = analyser_texte();
-        // On chaîne le texte comme FRÈRE de la liste
-        n_liste->mon_frere_suivant = n_texte;
+        n_liste->mon_frere_suivant = analyser_texte_liste();
     }
     return n_liste;
 }
 
 t_noeud* analyser_texte_liste() {
-    // 1. On analyse le texte d'abord
+    //analyse texte
     t_noeud* n_texte = analyser_texte();
-    // 2. On regarde si une liste suit le texte
-    if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE && strcmp(mon_token_courant.ma_valeur, "liste") == 0) {
-        t_noeud* n_liste = analyser_liste();
-        // On chaîne la liste comme FRÈRE du texte
-        n_texte->mon_frere_suivant = n_liste;
+    //si il y a une liste ensuite on l'attache
+    if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE && 
+        strcmp(mon_token_courant.ma_valeur, "liste") == 0) {
+        n_texte->mon_frere_suivant = analyser_liste_texte();
     }
     return n_texte;
 }
-
 t_noeud* analyser_texte() {
     t_noeud* premier_mot = NULL;
     t_noeud* dernier_mot = NULL;

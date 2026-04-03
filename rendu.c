@@ -7,42 +7,6 @@
 // Variable globale ou passée en paramètre pour suivre la colonne actuelle
 int colonne_actuelle = 0;
 
-void afficher_bordure_horizontale(const char* prefixe) {
-    int nb_parents = strlen(prefixe);
-    
-    // 1. On affiche les pipes des parents à gauche
-    printf("%s", prefixe);
-    
-    // 2. On affiche le coin gauche
-    printf("+");
-    
-    // 3. Calcul des tirets : 
-    // Total(50) - parents_gauche - parents_droite - 2 coins
-    // Comme parents_gauche == parents_droite == nb_parents :
-    int tirets = 50 - (2 * nb_parents) - 2;
-    
-    for (int i = 0; i < tirets; i++) {
-        printf("-");
-    }
-    
-    // 4. On affiche le coin droit
-    printf("+");
-    
-    // 5. On affiche les pipes des parents à droite pour fermer
-    for (int i = 0; i < nb_parents; i++) {
-        printf("|");
-    }
-    printf("\n");
-}
-
-void transformer_en_majuscules(char* texte) {
-    if (texte == NULL) return;
-    for (int i = 0; texte[i] != '\0'; i++) {
-        if ( 97 <= texte[i] && texte[i] <= 122 ) {
-            texte[i] -= 32;
-        }
-    }
-}
 
 void terminer_ligne(const char* prefixe) {
     // ligne deja vide
@@ -59,6 +23,38 @@ void terminer_ligne(const char* prefixe) {
     printf("\n");
     colonne_actuelle = 0;
 }
+
+void afficher_bordure_horizontale(const char* prefixe) {
+    //si on ecrivait du texte on finit la ligne 
+    if (colonne_actuelle != 0) {
+        terminer_ligne(prefixe);
+    }
+    printf("%s", prefixe);
+    printf("+");
+    int nb_parents = strlen(prefixe);
+    int tirets = 50 - (2 * nb_parents) - 2;
+
+    for (int i = 0; i < tirets; i++) {
+        printf("-");
+    }
+    printf("+");
+    for (int i = 0; i < nb_parents; i++) {
+        if (prefixe[i] == '|') printf("|");
+    }
+    printf("\n");
+    colonne_actuelle = 0;
+}
+
+void transformer_en_majuscules(char* texte) {
+    if (texte == NULL) return;
+    for (int i = 0; texte[i] != '\0'; i++) {
+        if ( 97 <= texte[i] && texte[i] <= 122 ) {
+            texte[i] -= 32;
+        }
+    }
+}
+
+
 
 // Vérifie si l'octet commence par les bits "10"
 int est_octet_suite(unsigned char c) {
@@ -112,15 +108,26 @@ void parcourir_et_afficher(t_noeud* n, char* prefixe) {
         case TYPE_DOCUMENT_GLOBAL:
             parcourir_et_afficher(n->mon_premier_fils, prefixe);
             break;
-        case TYPE_DOCUMENT:
         case TYPE_SECTION:
-        case TYPE_ANNEXE: {
+        case TYPE_ANNEXE:
+        case TYPE_DOCUMENT: {
+            // 1. On dessine la bordure du haut
             afficher_bordure_horizontale(prefixe);
+            // CRUCIAL : Après une bordure, on repart forcément d'une nouvelle ligne propre
+            colonne_actuelle = 0; 
+
             char nouveau_prefixe[100];
             sprintf(nouveau_prefixe, "%s|", prefixe);
+
+            // 2. On affiche le contenu
             parcourir_et_afficher(n->mon_premier_fils, nouveau_prefixe);
+
+            // 3. On ferme la dernière ligne de texte si besoin
             terminer_ligne(nouveau_prefixe); 
+
+            // 4. On dessine la bordure du bas
             afficher_bordure_horizontale(prefixe);
+            colonne_actuelle = 0; 
             break;
         }
         case TYPE_TITRE:

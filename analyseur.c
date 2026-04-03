@@ -18,15 +18,15 @@ void consommer_balise(t_type_token type_attendu, const char* nom_attendu) {
     } else {
         char format_recu[300];
         char format_attendu[300];
-
-        // Formatage de la balise attendue
         if (type_attendu == TOKEN_BALISE_FERMANTE) {
             sprintf(format_attendu, "</%s>", nom_attendu);
         } else {
             sprintf(format_attendu, "<%s>", nom_attendu);
         }
 
-        // Formatage de la balise réellement reçue
+        // permet de formater la balise vraiment recue 
+        // au lieu de Erreur syntaxique : attendu document, reçu document
+        //on recoit Erreur syntaxique : attendu </document>, reçu <document>
         if (mon_token_courant.mon_type == TOKEN_BALISE_FERMANTE) {
             sprintf(format_recu, "</%s>", mon_token_courant.ma_valeur);
         } else if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE) {
@@ -58,7 +58,7 @@ t_noeud* creer_noeud(t_type_noeud type) {
 
 }
 
-// --- Implémentation de la grammaire ---
+//implementation de la grammaire
 
 t_noeud* analyser_texte_enrichi() {
     t_noeud* racine = creer_noeud(TYPE_DOCUMENT_GLOBAL);
@@ -124,7 +124,7 @@ t_noeud* analyser_contenu() {
                  mon_token_courant.mon_type == TOKEN_BALISE_AUTO_FERMANTE) {
             nouveau_noeud = analyser_texte();
         }
-        // Chaînage des frères pour l'arbre n-aire
+        // chainage des freres
         if (nouveau_noeud != NULL) {
             if (premier_fils == NULL) {
                 premier_fils = nouveau_noeud;
@@ -173,20 +173,18 @@ t_noeud* analyser_liste() {
     return mon_noeud_lst;
 }
 
-// Fonction utilitaire pour savoir si c'est du texte
+// fonction utilitaire pour savoir si c'est du texte
 int est_du_texte() {
-    // 1. Texte brut
+    // texte
     if (mon_token_courant.mon_type == TOKEN_TEXTE) {
         return 1;
     }
-    // 2. Balise <important>
-    if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE && 
-        strcmp(mon_token_courant.ma_valeur, "important") == 0) {
+    // <important>
+    if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE && strcmp(mon_token_courant.ma_valeur, "important") == 0) {
         return 1;
     }
-    // 3. Balise <br/>
-    if (mon_token_courant.mon_type == TOKEN_BALISE_AUTO_FERMANTE && 
-        strcmp(mon_token_courant.ma_valeur, "br") == 0) {
+    // <br>
+    if (mon_token_courant.mon_type == TOKEN_BALISE_AUTO_FERMANTE && strcmp(mon_token_courant.ma_valeur, "br") == 0) {
         return 1;
     }
     return 0; // Ce n'est pas du texte
@@ -196,13 +194,12 @@ t_noeud* analyser_item() {
     consommer_balise(TOKEN_BALISE_OUVRANTE, "item");
     t_noeud* mon_noeud_item = creer_noeud(TYPE_ITEM);
     t_noeud* contenu_item = NULL;
-    // On regarde le premier jeton pour choisir entre Règle 9 ou 10
+    //on regarde le prmeier token pour voir quelle regle on applique
     if (mon_token_courant.mon_type == TOKEN_BALISE_OUVRANTE && strcmp(mon_token_courant.ma_valeur, "liste") == 0) {
-        // Règle 9
         contenu_item = analyser_liste_texte();
     } 
     else {
-        // Règle 10 (par défaut si c'est du texte)
+        //si c'est du texte
         contenu_item = analyser_texte_liste();
     }
     // On branche le résultat sous l'item

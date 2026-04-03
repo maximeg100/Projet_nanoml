@@ -5,7 +5,7 @@
 #include "rendu.h"
 #include "nanoml_types.h"
 
-// Rappel : mon_token_courant est une globale dans ton analyseur.c
+//globale
 extern t_token mon_token_courant; 
 
 int main(int argc, char* argv[]) {

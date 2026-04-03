@@ -3,7 +3,7 @@
 
 #include "analyseur.h"
 
-// Variable globale pour suivre la colonne actuelle (de 0 à 50)
+//globale
 extern int colonne_actuelle;
 
 void afficher_bordure_horizontale(const char* prefixe);

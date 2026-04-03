@@ -37,44 +37,36 @@ t_token mon_token_suivant() {
     t_token mon_jeton;
     int i = 0;
     vider_chaine(mon_jeton.ma_valeur, 256);
-
-    // Saute les espaces avant de commencer un jeton
+    //saute les espaces
     while (mon_caractere_actuel != EOF && est_espace(mon_caractere_actuel)) {
         mon_caractere_actuel = fgetc(mon_fichier_source);
     }
-
     if (mon_caractere_actuel == EOF) {
         mon_jeton.mon_type = TOKEN_FIN_FICHIER;
         return mon_jeton;
     }
-
     if (mon_caractere_actuel == '<') {
         mon_caractere_actuel = fgetc(mon_fichier_source);
-
         if (mon_caractere_actuel == '/') {
             mon_jeton.mon_type = TOKEN_BALISE_FERMANTE;
             mon_caractere_actuel = fgetc(mon_fichier_source);
         } else {
             mon_jeton.mon_type = TOKEN_BALISE_OUVRANTE;
         }
-
         while (mon_caractere_actuel != '>' && mon_caractere_actuel != '/' && mon_caractere_actuel != EOF) {
             mon_jeton.ma_valeur[i++] = mon_caractere_actuel;
             mon_caractere_actuel = fgetc(mon_fichier_source);
         }
-
         if (mon_caractere_actuel == '/') {
             mon_jeton.mon_type = TOKEN_BALISE_AUTO_FERMANTE;
             mon_caractere_actuel = fgetc(mon_fichier_source);
         }
-
         if (mon_caractere_actuel == '>') {
             mon_caractere_actuel = fgetc(mon_fichier_source);
         }
     } 
     else {
         mon_jeton.mon_type = TOKEN_TEXTE;
-        // S'arrête dès qu'on voit une balise OU un espace
         while (mon_caractere_actuel != '<' && !est_espace(mon_caractere_actuel) && mon_caractere_actuel != EOF) {
             mon_jeton.ma_valeur[i++] = mon_caractere_actuel;
             mon_caractere_actuel = fgetc(mon_fichier_source);

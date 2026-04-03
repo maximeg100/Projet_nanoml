@@ -1,20 +1,19 @@
-# Nom de ton programme final
+opt = -Wall -c
+
 projet_nanoml: main.o lexer.o analyseur.o rendu.o
 	gcc main.o lexer.o analyseur.o rendu.o -o projet_nanoml
 
-# Compilation de chaque fichier .c en .o
 main.o: main.c
-	gcc -Wall -c main.c
+	gcc ${opt} main.c
 
 lexer.o: lexer.c
-	gcc -Wall -c lexer.c
+	gcc ${opt} lexer.c
 
 analyseur.o: analyseur.c
-	gcc -Wall -c analyseur.c
+	gcc ${opt} analyseur.c
 
 rendu.o: rendu.c
-	gcc -Wall -c rendu.c
+	gcc ${opt} rendu.c
 
-# Pour tout effacer et recommencer propre
 clean:
 	rm -f *.o projet_nanoml

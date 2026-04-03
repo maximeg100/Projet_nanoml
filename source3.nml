@@ -1,7 +1,7 @@
 <document>
     <titre> Sujet de projet Nanoml </titre>
     <section>
-        <titre> Grammaire </titre>
+        <titre> <important>Grammaire </important></titre>
         inspiree par la forme BN.
         <liste>
             <item> texte_enrichi ::= document annexes </item>

@@ -1,7 +1,7 @@
 #ifndef NANOML_TYPES_H
 #define NANOML_TYPES_H
 
-// Les différents types d'éléments définis par la grammaire
+// differents types d'element de la grammaire
 typedef enum {
     TYPE_DOCUMENT_GLOBAL,
     TYPE_DOCUMENT,      // <document>
@@ -15,12 +15,12 @@ typedef enum {
     TYPE_TEXTE_BRUT     // Contenu textuel pur 
 } t_type_noeud;
 
-// La structure de l'arbre n-aire
+// structure de l'arbre
 typedef struct s_noeud {
     t_type_noeud mon_type;
     char* mon_contenu;              // Stocke le texte si c'est un mot/titre
-    struct s_noeud* mon_premier_fils; // Pointeur vers le premier enfant (ex: une section dans un doc)
-    struct s_noeud* mon_frere_suivant; // Pointeur vers l'élément suivant au même niveau
+    struct s_noeud* mon_premier_fils; // pointeur vers le premier fils
+    struct s_noeud* mon_frere_suivant; // pointeur vers l'élément suivant au même niveau
 } t_noeud;
 
 #endif

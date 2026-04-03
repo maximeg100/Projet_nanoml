@@ -1,5 +1,5 @@
 <document>
-  <titre>Mon Premier Test</titre>
+  <titre><important>Mon Premier Test</important></titre>
   Bonjour
   <section>
     diisobutylphénoxyéthoxyéthyldiméthylbenzylammonium
@@ -7,6 +7,12 @@
   <section>
     Bonjour
     <liste>
+      <item>
+        <liste>
+          <item> Compote</item>
+          <item> Trophee </item>
+        </liste>
+      </item>
       <item>Fraise</item>
       <item>Framboise</item>
       <item>Myrtille</item>

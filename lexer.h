@@ -6,7 +6,7 @@
 typedef enum {
     TOKEN_BALISE_OUVRANTE,
     TOKEN_BALISE_FERMANTE,
-    TOKEN_BALISE_AUTO_FERMANTE, // Pour <br/>
+    TOKEN_BALISE_AUTO_FERMANTE,
     TOKEN_TEXTE,
     TOKEN_FIN_FICHIER,
     TOKEN_ERREUR
@@ -17,7 +17,7 @@ typedef struct {
     char ma_valeur[256]; // Stocke "section", "titre" ou le texte brut
 } t_token;
 
-// Fonctions globales
+
 void initialiser_lexer(char* nom_fichier);
 t_token mon_token_suivant();
 void terminer_lexer();

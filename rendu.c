@@ -4,7 +4,7 @@
 
 #include "nanoml_types.h"
 
-// Variable globale ou passée en paramètre pour suivre la colonne actuelle
+// pour suivre la colonne actuelle et ne pas depasser 50
 int colonne_actuelle = 0;
 
 
@@ -45,15 +45,21 @@ void afficher_bordure_horizontale(const char* prefixe) {
     colonne_actuelle = 0;
 }
 
-void transformer_en_majuscules(char* texte) {
-    if (texte == NULL) return;
-    for (int i = 0; texte[i] != '\0'; i++) {
-        if ( 97 <= texte[i] && texte[i] <= 122 ) {
-            texte[i] -= 32;
+void transformer_en_majuscules(t_noeud* n) {
+    if (n == NULL) return;
+    // on transforme le texte du noeud actuel
+    if (n->mon_contenu != NULL) {
+        for (int i = 0; n->mon_contenu[i] != '\0'; i++) {
+            if (n->mon_contenu[i] >= 'a' && n->mon_contenu[i] <= 'z') {
+                n->mon_contenu[i] -= 32;
+            }
         }
     }
+    // fils
+    transformer_en_majuscules(n->mon_premier_fils);
+    // frere
+    transformer_en_majuscules(n->mon_frere_suivant);
 }
-
 
 
 // Vérifie si l'octet commence par les bits "10"
@@ -66,31 +72,26 @@ int est_octet_suite(unsigned char c) {
 void afficher_mot(const char* mot, const char* prefixe) {
     int nb_pipes = strlen(prefixe); 
     int borne_droite = 50 - nb_pipes;
-
-    // 1. Initialisation du début de ligne
+    // debut de ligne
     if (colonne_actuelle == 0) {
         printf("%s", prefixe);
         colonne_actuelle = nb_pipes;
     }
-
-    // 2. Affichage et découpe
+    // affichage et decoupe si necessaire
     for (int i = 0; mot[i] != '\0'; i++) {
-        // Si on atteint la bordure de droite, on change de ligne
+        // on change de ligne si on allait depasser
         if (colonne_actuelle >= borne_droite) {
             terminer_ligne(prefixe);
             printf("%s", prefixe);
             colonne_actuelle = nb_pipes;
         }
-
         printf("%c", mot[i]);
-
-        // On n'incrémente la colonne que pour les caractères "visuels"
+        // on n'incrémente la colonne que pour les caractères "visuels"
         if (!est_octet_suite((unsigned char)mot[i])) {
             colonne_actuelle++;
         }
     }
-
-    // 3. Espace après le mot
+    // espace apres le mot
     if (colonne_actuelle < borne_droite) {
         printf(" ");
         colonne_actuelle++;
@@ -111,31 +112,23 @@ void parcourir_et_afficher(t_noeud* n, char* prefixe) {
         case TYPE_SECTION:
         case TYPE_ANNEXE:
         case TYPE_DOCUMENT: {
-            // 1. On dessine la bordure du haut
+            // bordure du haut
             afficher_bordure_horizontale(prefixe);
-            // CRUCIAL : Après une bordure, on repart forcément d'une nouvelle ligne propre
+            // apres une bordure, on part d'une ligne propre
             colonne_actuelle = 0; 
-
             char nouveau_prefixe[100];
             sprintf(nouveau_prefixe, "%s|", prefixe);
-
-            // 2. On affiche le contenu
+            // affiche le contenu
             parcourir_et_afficher(n->mon_premier_fils, nouveau_prefixe);
-
-            // 3. On ferme la dernière ligne de texte si besoin
+            // on ferme la dernière ligne de texte si besoin
             terminer_ligne(nouveau_prefixe); 
-
-            // 4. On dessine la bordure du bas
+            // bordure du bas
             afficher_bordure_horizontale(prefixe);
             colonne_actuelle = 0; 
             break;
         }
         case TYPE_TITRE:
-            t_noeud* curseur = n->mon_premier_fils;
-            while(curseur != NULL) {
-                if (curseur->mon_contenu) transformer_en_majuscules(curseur->mon_contenu);
-                curseur = curseur->mon_frere_suivant;
-            }
+            transformer_en_majuscules(n->mon_premier_fils);
             parcourir_et_afficher(n->mon_premier_fils, prefixe);
             terminer_ligne(prefixe);
             break;
@@ -162,7 +155,7 @@ void parcourir_et_afficher(t_noeud* n, char* prefixe) {
     }
     parcourir_et_afficher(n->mon_frere_suivant, prefixe);
 }
-
+//permet de traduire pour une meilleure vision de l'arbre
 const char* nom_du_type(t_type_noeud type) {
     switch (type) {
         case TYPE_DOCUMENT_GLOBAL: return "GLOBAL";

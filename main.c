@@ -24,7 +24,9 @@ int main(int argc, char* argv[]) {
         printf("RENDU FINAL\n");
         char prefixe[100] = ""; 
         parcourir_et_afficher(racine, prefixe);
+        liberer_arbre(racine);
     }
+
 
     return 0;
 }

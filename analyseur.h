@@ -20,6 +20,7 @@ t_noeud* analyser_mot_important();
 void avancer();
 void consommer_balise(t_type_token type_attendu, const char* nom_attendu);
 t_noeud* creer_noeud(t_type_noeud type);
+void liberer_arbre(t_noeud* n);
 int est_du_texte();
 
 #endif

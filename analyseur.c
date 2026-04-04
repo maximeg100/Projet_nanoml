@@ -58,6 +58,16 @@ t_noeud* creer_noeud(t_type_noeud type) {
 
 }
 
+void liberer_arbre(t_noeud* n) {
+    if (n == NULL) return;
+    liberer_arbre(n->mon_premier_fils);
+    liberer_arbre(n->mon_frere_suivant);
+    if (n->mon_contenu != NULL) {
+        free(n->mon_contenu);
+    }
+    free(n);
+}
+
 //implementation de la grammaire
 
 t_noeud* analyser_texte_enrichi() {
